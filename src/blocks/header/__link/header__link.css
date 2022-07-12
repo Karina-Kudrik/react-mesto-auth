@@ -17,3 +17,15 @@
 .header__link_grey {
    color: #A9A9A9;
 }
+
+@media (max-width: 560px) {
+   .header__link {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 17px;
+      margin-top: 38px;
+      margin-right: 27px;
+   }
+}

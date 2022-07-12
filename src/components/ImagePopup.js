@@ -2,7 +2,7 @@ function ImagePopup({card, onClose}) {
    return (
       <div className={`popup popup_type_card-preview ${card && "popup_opened"}`}>
          <div className="popup__wrapper">
-            <img className="popup__image" src={card ? card.link : ""} alt={card ? card.name : ""}/>
+            <img className="popup__image" src={card?.link}  alt={card?.name}/>
             <h2 className="popup__caption">{card ? card.name : ""}</h2>
             <button 
                type="reset" 

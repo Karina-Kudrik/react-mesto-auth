@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import { Switch, Route, Redirect, useHistory } from 'react-router-dom';
 import { api } from '../utils/Api';
-import * as auth from '../auth.js';
+import * as auth from '../utils/auth.js';
 import Header from './Header.js';
 import Main from './Main.js';
 import Footer from './Footer.js';
@@ -24,7 +24,7 @@ function App() {
    const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
    const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
    const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = useState(false);
-   const [isInfoTooltip, setIsInfoTooltipOpen] = useState(false);
+   const [isInfoTooltip, setIsInfoTooltipOpen] = useState({opened: false, isAuthComplete: false});
 
    const [cards, setCards] = useState([]);
    const [selectedCard, setSelectedCard] = useState(null);
@@ -34,27 +34,26 @@ function App() {
 
    const [currentUser, setCurrentUser] = useState({});
 
-   const [isAuthComplete, setIsAuthComplete] = useState(false);
    const [loggedIn, setLoggedIn] = useState(false);
    const [email, setEmail] = useState('');
 
    const history = useHistory();
    
    useEffect (() => {
-      api.getUserInfo()
+      if(loggedIn) {
+         api.getUserInfo()
          .then((res) => (
             setCurrentUser(res)
          ))
          .catch((err) => console.log(err));
-   }, []);
 
-   useEffect (() => {
-      api.getInitialCards()
+         api.getInitialCards()
          .then((res) => {
             setCards(res)
          })
          .catch((err) => console.log(err));
-   }, []);
+      }
+   }, [loggedIn]);
 
    useEffect(() => {
       checkToken();
@@ -164,16 +163,14 @@ function App() {
       auth.register(password, email)
          .then((res) => {
             if(res.data) {
-               setIsAuthComplete(true);
                setIsInfoTooltipOpen(true);
             }   
          })
          .then(() => {
             history.push('/');
-            setIsInfoTooltipOpen(false);
          })
-         .catch(() => {
-            setIsAuthComplete(false);
+         .catch((err) => console.log(err))
+         .finally(() => {
             setIsInfoTooltipOpen(true);
          })
    }
@@ -182,15 +179,14 @@ function App() {
       auth.autorize(password, email)
          .then((res) => {
             if(res.token) {   
-               console.log(res.token);     
                localStorage.setItem('token', res.token);
                setLoggedIn(true);
                setEmail(email);
                history.push('/');
             }
          })
-         .catch(() => {
-            setIsAuthComplete(false);
+         .catch((err) => console.log(err))
+         .finally(() => {
             setIsInfoTooltipOpen(true);
          })
    }
@@ -198,7 +194,6 @@ function App() {
    function checkToken() {
       let token = localStorage.getItem('token');
          if(token) {
-            console.log(token);
             auth.getContent(token)
                .then((res) => {
                   setLoggedIn(true);
@@ -238,7 +233,7 @@ function App() {
                   cards={cards}
                   loggedIn={loggedIn}
                />
-               <Route>
+               <Route path="*">
                   { loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in"/> }
                </Route>
             </Switch>
@@ -282,7 +277,6 @@ function App() {
          <InfoToolTip 
             isOpen={isInfoTooltip}
             onClose={closeAllPopups}
-            isAuthComplete={isAuthComplete}
          />
 
          </CurrentUserContext.Provider>

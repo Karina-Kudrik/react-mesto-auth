@@ -9,4 +9,12 @@
    font-weight: 400;
    font-size: 18px;
    line-height: 22px;
+   cursor: pointer;
+}
+
+@media (max-width: 560px) {
+   .autorization__button{
+      width: 260px;
+      margin-top: 170px;
+   }
 }
