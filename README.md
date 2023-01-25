@@ -17,4 +17,4 @@
 * React
 * Webpack
 
-ССылка на проект: https://karina-kudrik.github.io/react-mesto-auth/
+Сcылка на проект: https://karina-kudrik.github.io/react-mesto-auth/
